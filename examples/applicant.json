@@ -1,0 +1,9 @@
+{
+  "revenue": 65000,
+  "dti_n": 18.5,
+  "loan_amnt": 15000,
+  "fico_n": 702,
+  "emp_length": "5 years",
+  "purpose": "debt_consolidation",
+  "home_ownership_n": "RENT"
+}

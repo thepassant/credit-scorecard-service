@@ -1,0 +1,4 @@
+revenue,dti_n,loan_amnt,fico_n,emp_length,purpose,home_ownership_n
+65000,18.5,15000,702,5 years,debt_consolidation,RENT
+120000,6.2,8000,780,10+ years,credit_card,MORTGAGE
+32000,34.0,25000,662,< 1 year,small_business,RENT

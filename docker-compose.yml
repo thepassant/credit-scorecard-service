@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    image: credit-scorecard:local
+    ports:
+      - "8000:8000"
+    volumes:
+      - prediction-logs:/app/logs
+
+volumes:
+  prediction-logs:

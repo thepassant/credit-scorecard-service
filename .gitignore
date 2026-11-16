@@ -218,3 +218,30 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- Project-specific ----
+
+# macOS
+.DS_Store
+
+# Patch/diff files
+*.patch
+*.diff
+
+# Datasets: keep the data dictionary and folder placeholder, ignore raw/processed data
+data/*
+!data/.gitkeep
+!data/LCDataDictionary.xlsx
+
+# Trained models and experiment artifacts
+models/*
+!models/.gitkeep
+*.pkl
+*.joblib
+mlruns/
+mlartifacts/
+reports/
+
+# Local databases (e.g. prediction logs)
+*.db
+*.sqlite

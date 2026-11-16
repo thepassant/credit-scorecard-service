@@ -1,0 +1,28 @@
+[project]
+name = "credit-scorecard-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "thepassant", email = "bassant.ayman69@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.163.1",
+    "joblib>=1.6.0",
+    "optbinning>=1.0.0",
+    "pandas>=3.1.1",
+    "pydantic>=2.14.3",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+    "scikit-learn>=1.9.1",
+    "uvicorn>=0.54.0",
+    "xgboost>=3.2.0",
+]
+
+[project.scripts]
+credit-scorecard-service = "credit_scorecard_service:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"

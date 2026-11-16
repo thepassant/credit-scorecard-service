@@ -1,28 +1,68 @@
 [project]
 name = "credit-scorecard-service"
 version = "0.1.0"
-description = "Add your description here"
+description = "Probability-of-default scorecard for Lending Club loans, served with FastAPI."
 readme = "README.md"
 authors = [
     { name = "thepassant", email = "bassant.ayman69@gmail.com" }
 ]
 requires-python = ">=3.11"
+# Runtime dependencies of the prediction service only. The scorecard artifact is
+# a plain JSON points table, so serving needs no ML libraries.
 dependencies = [
     "fastapi>=0.163.1",
-    "joblib>=1.6.0",
+    "numpy>=2.4",
+    "pydantic>=2.14.3",
+    "python-multipart>=0.0.20",
+    "uvicorn>=0.54.0",
+]
+
+[project.optional-dependencies]
+# Everything needed to download data, fit and compare models.
+train = [
     "optbinning>=1.0.0",
     "pandas>=3.1.1",
-    "pydantic>=2.14.3",
-    "pytest>=9.2.0",
-    "ruff>=0.17.5",
     "scikit-learn>=1.9.1",
-    "uvicorn>=0.54.0",
     "xgboost>=3.2.0",
 ]
 
 [project.scripts]
-credit-scorecard-service = "credit_scorecard_service:main"
+cs-download = "credit_scorecard_service.training.data:main"
+cs-train = "credit_scorecard_service.training.train:main"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28",
+    "pre-commit>=4.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]
+notebook = [
+    "ipykernel>=7.4.0",
+    "matplotlib>=3.11.2",
+    "nbconvert>=7.17.2",
+    "nbformat>=5.11.1",
+    "shap>=0.51.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
 build-backend = "uv_build"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = [
+    "ignore::DeprecationWarning:importlib._bootstrap",
+    "ignore:Setting an item of incompatible dtype:Warning:optbinning",
+]

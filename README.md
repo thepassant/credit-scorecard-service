@@ -67,6 +67,8 @@ default rate drops to 2% for 2018Q4.
 ## Results
 
 Full output: `models/metrics-vN.json` (metrics, IV per feature, calibration, PSI, challenger params).
+Plots, the scorecard points table and the SHAP comparison are in
+[`notebooks/01_eda_and_model_comparison.ipynb`](notebooks/01_eda_and_model_comparison.ipynb).
 
 <!-- RESULTS:START -->
 Champion `v1`: 829k training loans, 175k validation, 104k test.
@@ -83,7 +85,10 @@ Champion `v1`: 829k training loans, 175k validation, 104k test.
 only seven application-time fields, the remaining signal is mostly the shape of
 FICO, DTI and loan-to-income, which binning already captures. The scorecard keeps
 every decision explainable as points per bin, gives monotonic, defensible reason
-codes and needs no ML runtime, so it stays the champion.
+codes and needs no ML runtime, so it stays the champion. SHAP shows the two models agree on the main drivers (rank
+correlation 0.91, 81% overlap in approvals). XGBoost's edge comes from the FICO tail
+above 760, from loan purpose (dropped from the scorecard at IV 0.018), and from
+interactions.
 
 **Information value.** loan_to_income 0.126 · fico_n 0.122 · dti_n 0.075 ·
 loan_amnt 0.036 · revenue 0.032 · home_ownership_n 0.021 · *purpose 0.018 and
@@ -112,6 +117,7 @@ make install      # uv sync --extra train + pre-commit hooks
 make train        # download data, train, compare challengers, promote champion (~5 min)
 make test
 make serve        # http://localhost:8000/docs
+make notebook     # re-execute the EDA / model-comparison notebook in place
 ```
 
 Container (uses the committed `models/champion.json`):
@@ -203,6 +209,7 @@ src/credit_scorecard_service/
     challengers.py     one-hot logreg, decision tree, random forest, XGBoost
     metrics.py         AUC/Gini/KS, calibration, cost-optimal cutoff, PSI
     train.py           `cs-train` entry point
+notebooks/             EDA, scorecard walkthrough, challenger + SHAP comparison
 tests/                 synthetic-data fixtures: no download needed in CI
 models/                versioned scorecard + metrics JSON, champion.json
 ```
@@ -220,7 +227,8 @@ models/                versioned scorecard + metrics JSON, champion.json
 
 ## Roadmap
 
-- [ ] EDA and model-comparison notebook (incl. SHAP for XGBoost)
+- [x] EDA and model-comparison notebook (incl. SHAP for XGBoost)
+- [ ] Scorecard v2: re-admit grouped `purpose`, finer top FICO bin (gaps found by SHAP)
 - [ ] PD recalibration (intercept / Platt) on the most recent matured months
 - [ ] MLflow tracking
 - [ ] Retraining loop: monthly ingest → validation → PSI/AUC check → retrain → promote on margin

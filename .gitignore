@@ -137,6 +137,7 @@ celerybeat.pid
 *.rdb
 *.aof
 *.pid
+data/*.xlsx
 
 # RabbitMQ
 mnesia/
@@ -236,6 +237,8 @@ data/*
 # Trained models and experiment artifacts
 models/*
 !models/.gitkeep
+# Scorecard artifacts are small, human-readable JSON: version them in git.
+!models/*.json
 *.pkl
 *.joblib
 mlruns/
@@ -243,5 +246,6 @@ mlartifacts/
 reports/
 
 # Local databases (e.g. prediction logs)
+logs/
 *.db
 *.sqlite

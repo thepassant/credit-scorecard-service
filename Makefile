@@ -1,7 +1,7 @@
-.PHONY: install data train train-quick test lint serve docker-build docker-run
+.PHONY: install data train train-quick test lint serve notebook docker-build docker-run
 
 install:        ## Install all dependencies (service + training + dev tools)
-	uv sync --extra train
+	uv sync --extra train --group notebook
 	uv run pre-commit install
 
 data:           ## Download the dataset and verify its checksum
@@ -19,6 +19,10 @@ test:
 lint:
 	uv run ruff check .
 	uv run ruff format --check .
+
+notebook:       ## Re-execute the EDA notebook in place (needs data + a trained champion)
+	uv run --group notebook jupyter nbconvert --to notebook --execute --inplace \
+		notebooks/01_eda_and_model_comparison.ipynb
 
 serve:          ## Run the API locally with reload
 	uv run uvicorn credit_scorecard_service.api:app --reload --port 8000

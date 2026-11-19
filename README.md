@@ -57,7 +57,7 @@ default rate drops to 2% for 2018Q4.
 1. **Binning:** each feature is binned with [optbinning](https://gnpalencia.org/optbinning/)
    (monotonic trend for numeric features, at most 10 bins). Each bin's weight
    of evidence is `WoE = ln(%good / %bad)`, and its information value (IV) is computed.
-2. **Selection:** features with IV < 0.02 are dropped. The logistic regression is refit
+2. **Selection:** features with IV < 0.005 are dropped. The logistic regression is refit
    until every coefficient has the expected negative sign, since a flipped sign means
    collinearity. These settings are fixed by hand, not tuned, and are checked with a
    sensitivity run instead (see *Scorecard settings* under Results).
@@ -81,66 +81,70 @@ Plots, the scorecard points table and the SHAP comparison are in
 [`notebooks/01_eda_and_model_comparison.ipynb`](notebooks/01_eda_and_model_comparison.ipynb).
 
 <!-- RESULTS:START -->
-Champion `v1`: 829k training loans, 175k validation, 104k test.
+Champion `v2`: 829k training loans, 175k validation, 104k test.
 
 | Model | Valid AUC | Valid Gini | Valid KS | Test AUC | Test Gini |
 |---|---|---|---|---|---|
-| **WoE scorecard (champion)** | 0.658 | 0.317 | 0.227 | 0.658 | 0.317 |
+| **WoE scorecard v2 (champion)** | 0.662 | 0.323 | 0.230 | 0.661 | 0.321 |
+| WoE scorecard v1 (IV cutoff 0.02) | 0.658 | 0.317 | 0.227 | 0.658 | 0.317 |
 | One-hot logistic regression | 0.663 | 0.327 | 0.233 | 0.663 | 0.326 |
 | Decision tree (depth 8) | 0.654 | 0.309 | 0.223 | 0.650 | 0.300 |
 | Random forest (depth 12) | 0.664 | 0.329 | 0.234 | 0.665 | 0.330 |
 | XGBoost (depth 5) | 0.669 | 0.339 | 0.240 | 0.668 | 0.337 |
 
-**Trade-off.** XGBoost gains about 1 AUC point (2 Gini points) over the scorecard. With
-only seven application-time fields, the remaining signal is mostly the shape of
+**v1 → v2.** v2 lowers the IV cutoff from 0.02 to 0.005, so `purpose` and `emp_length`
+are back in the scorecard (see *Scorecard settings* below). Validation AUC rises from
+0.658 to 0.662, and test AUC from 0.658 to 0.661. Both versions stay in `models/`.
+
+**Trade-off.** XGBoost gains under 1 AUC point (1.5 Gini points) over the scorecard.
+With only seven application-time fields, the remaining signal is mostly the shape of
 FICO, DTI and loan-to-income, which binning already captures. The scorecard keeps
 every decision explainable as points per bin, gives monotonic, defensible reason
-codes and needs no ML runtime, so it stays the champion. SHAP shows the two models agree on the main drivers (rank
-correlation 0.91, 81% overlap in approvals). XGBoost's edge comes from the FICO tail
-above 760, from loan purpose (dropped from the scorecard at IV 0.018), and from
-interactions.
+codes and needs no ML runtime, so it stays the champion. SHAP shows the two models
+agree on the main drivers (rank correlation 0.93, 84% overlap in approvals) and now
+give loan purpose similar weight. XGBoost's remaining edge comes from the FICO tail
+above 760 and from interactions.
 
 **Information value.** loan_to_income 0.126 · fico_n 0.122 · dti_n 0.075 ·
-loan_amnt 0.036 · revenue 0.032 · home_ownership_n 0.021 · *purpose 0.018 and
-emp_length 0.007 dropped (IV < 0.02)*.
+loan_amnt 0.036 · revenue 0.032 · home_ownership_n 0.021 · purpose 0.018 ·
+emp_length 0.007. All eight pass the 0.005 cutoff.
 
 **Scorecard settings.** The challengers are tuned with grids. The scorecard's settings
 are fixed in `config.py`, so `make sensitivity` refits it with one setting changed at a
 time and records the result in `models/sensitivity.json`. Settings are judged on
-validation; test is for reference.
+validation; test is for reference. Configured values are in bold.
 
 | Setting | Value | Valid AUC | Test AUC | Bins | Features |
 |---|---|---|---|---|---|
-| max bins per feature | 5 | 0.6566 | 0.6564 | 28 | 6 |
-| | **10** | **0.6584** | **0.6584** | 51 | 6 |
-| | 20 | 0.6588 | 0.6585 | 63 | 6 |
-| min loans per bin | 1%, **2%**, 5% | 0.6584 | 0.6584 | 51 | 6 |
-| IV cutoff | 0 | 0.6616 | 0.6607 | 65 | 8 |
+| max bins per feature | 5 | 0.6597 | 0.6586 | 37 | 8 |
+| | **10** | **0.6616** | **0.6607** | 65 | 8 |
+| | 20 | 0.6619 | 0.6608 | 77 | 8 |
+| min loans per bin | 1%, **2%**, 5% | 0.6616 | 0.6607 | 65 | 8 |
+| IV cutoff | 0, **0.005** | **0.6616** | **0.6607** | 65 | 8 |
 | | 0.01 | 0.6598 | 0.6578 | 55 | 7 |
-| | **0.02** | **0.6584** | **0.6584** | 51 | 6 |
+| | 0.02 (v1) | 0.6584 | 0.6584 | 51 | 6 |
 | | 0.03 | 0.6531 | 0.6512 | 48 | 5 |
 
-- **Max bins:** going from 5 to 10 bins gains 0.002 AUC. Going to 20 adds only 0.0004
+- **Max bins:** going from 5 to 10 bins gains 0.002 AUC. Going to 20 adds only 0.0003
   for 12 more bins to read and explain, so 10 is kept.
 - **Min loans per bin:** has no effect. optbinning first splits each feature into at most
   20 pre-bins of at least 5% of loans each, so a minimum of 5% or less never binds.
-- **IV cutoff:** the one setting that matters. Keeping `purpose` and `emp_length`
-  (cutoff 0) adds 0.003 AUC on both validation and test, and both get coefficients with
-  the expected sign. The SHAP comparison above points the same way: part of XGBoost's
-  edge comes from `purpose`. v1 keeps the conventional 0.02 cutoff; re-admitting these
-  features is the first item for v2 (see Roadmap).
+- **IV cutoff:** the one setting that matters. The conventional 0.02 drops `purpose`
+  (IV 0.018) and `emp_length` (0.007), which costs 0.003 AUC on both validation and
+  test. Both get coefficients with the expected sign when kept. v2 uses 0.005, which
+  keeps them and still screens out features with no signal.
 
-**Stability.** PSI of the score against training is 0.0005 (valid) and 0.016 (test).
+**Stability.** PSI of the score against training is 0.0005 (valid) and 0.011 (test).
 All features are below 0.06, so the inputs are stable.
 
 **Calibration.** Ranking is monotonic across PD deciles, but the test months default
-more than predicted: 23.5% observed against 17.5% predicted on average. Default rates
+more than predicted: 23.5% observed against 17.6% predicted on average. Default rates
 rose for the 2016 vintages, and the dataset keeps only resolved loans. The cutoff is
 set on observed validation outcomes, so decisions account for this, but quoted PDs
 should be recalibrated. That step is planned for the retraining loop.
 
-**Decision.** At a 5:1 cost ratio the cost-optimal cutoff (PD < 13.5%, score ≥ 541)
-approves 30% of validation applicants with an 11.6% bad rate among approvals,
+**Decision.** At a 5:1 cost ratio the cost-optimal cutoff (PD < 13.0%, score ≥ 542)
+approves 29% of validation applicants with an 11.3% bad rate among approvals,
 against 22% overall.
 <!-- RESULTS:END -->
 
@@ -182,16 +186,16 @@ curl -s localhost:8000/predict/batch/csv -F file=@examples/applicants.csv
 
 ```json
 {
-  "probability_of_default": 0.186,
-  "score": 530,
+  "probability_of_default": 0.194,
+  "score": 528,
   "risk_band": "C",
   "decision": "decline",
   "reason_codes": [
-    {"feature": "fico_n", "description": "FICO score", "value": 702.0, "points": 3.7, "points_below_max": 26.9},
-    {"feature": "loan_to_income", "description": "Loan amount relative to income", "value": 0.231, "points": 0.7, "points_below_max": 10.1},
-    {"feature": "loan_amnt", "description": "Loan amount", "value": 15000.0, "points": -1.5, "points_below_max": 8.6}
+    {"feature": "fico_n", "description": "FICO score", "value": 702.0, "points": 3.7, "points_below_max": 26.7},
+    {"feature": "loan_to_income", "description": "Loan amount relative to income", "value": 0.231, "points": 0.7, "points_below_max": 9.8},
+    {"feature": "loan_amnt", "description": "Loan amount", "value": 15000.0, "points": -1.5, "points_below_max": 8.9}
   ],
-  "model_version": "v1",
+  "model_version": "v2",
   "request_id": "ca67c5fc2ea94b94aec34db918823eeb"
 }
 ```
@@ -267,8 +271,8 @@ models/                versioned scorecard + metrics JSON, champion.json
 
 - [x] EDA and model-comparison notebook (incl. SHAP for XGBoost)
 - [x] Sensitivity check of the scorecard's binning settings (`make sensitivity`)
-- [ ] Scorecard v2: re-admit `purpose` and `emp_length` (+0.003 AUC at IV cutoff 0),
-  finer top FICO bin (gaps found by SHAP and the sensitivity check)
+- [x] Scorecard v2: re-admit `purpose` and `emp_length` (IV cutoff 0.005, +0.003 AUC)
+- [ ] Scorecard v3: finer top FICO bin (gap found by SHAP)
 - [ ] PD recalibration (intercept / Platt) on the most recent matured months
 - [ ] MLflow tracking
 - [ ] Retraining loop: monthly ingest → validation → PSI/AUC check → retrain → promote on margin

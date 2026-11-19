@@ -1,0 +1,278 @@
+{
+  "version": "v2",
+  "created_at": "2026-11-19T12:49:01+00:00",
+  "git_commit": "852314b",
+  "random_seed": 42,
+  "data": {
+    "source": "https://zenodo.org/api/records/11295916/files/LC_loans_granting_model_dataset.csv/content",
+    "md5": "b019384d6bc65bf2a3e839362e4ff502",
+    "sample_frac": null,
+    "split": {
+      "train_end": "2015-12",
+      "valid_start": "2016-01",
+      "valid_end": "2016-06",
+      "test_start": "2016-10",
+      "test_end": "2017-03"
+    },
+    "rows": {
+      "train": {
+        "rows": 829347,
+        "default_rate": 0.1846,
+        "from": "2007-06",
+        "to": "2015-12"
+      },
+      "valid": {
+        "rows": 174857,
+        "default_rate": 0.2215,
+        "from": "2016-01",
+        "to": "2016-06"
+      },
+      "test": {
+        "rows": 104170,
+        "default_rate": 0.2346,
+        "from": "2016-10",
+        "to": "2017-03"
+      }
+    }
+  },
+  "metrics": {
+    "train": {
+      "auc": 0.6546,
+      "gini": 0.3093,
+      "ks": 0.2219,
+      "mean_pd": 0.1846,
+      "default_rate": 0.1846
+    },
+    "valid": {
+      "auc": 0.6616,
+      "gini": 0.3231,
+      "ks": 0.2298,
+      "mean_pd": 0.1847,
+      "default_rate": 0.2215
+    },
+    "test": {
+      "auc": 0.6607,
+      "gini": 0.3214,
+      "ks": 0.2298,
+      "mean_pd": 0.1762,
+      "default_rate": 0.2346
+    }
+  },
+  "cutoff": {
+    "pd_threshold": 0.1302,
+    "approval_rate": 0.2887,
+    "bad_rate_approved": 0.1125,
+    "cost_per_applicant": 0.6846,
+    "costs": {
+      "approve_bad": 5.0,
+      "decline_good": 1.0
+    }
+  },
+  "score_range": [
+    479.0,
+    598.6
+  ],
+  "information_values": {
+    "revenue": 0.0319,
+    "dti_n": 0.0748,
+    "loan_amnt": 0.0364,
+    "fico_n": 0.1218,
+    "loan_to_income": 0.1255,
+    "emp_length": 0.0067,
+    "purpose": 0.0181,
+    "home_ownership_n": 0.0207
+  },
+  "selected_features": [
+    "revenue",
+    "dti_n",
+    "loan_amnt",
+    "fico_n",
+    "loan_to_income",
+    "emp_length",
+    "purpose",
+    "home_ownership_n"
+  ],
+  "dropped_features": {},
+  "calibration_test": [
+    {
+      "bin": 0,
+      "count": 10417,
+      "predicted_pd": 0.0582,
+      "observed_rate": 0.0812
+    },
+    {
+      "bin": 1,
+      "count": 10417,
+      "predicted_pd": 0.0931,
+      "observed_rate": 0.1236
+    },
+    {
+      "bin": 2,
+      "count": 10417,
+      "predicted_pd": 0.1166,
+      "observed_rate": 0.1621
+    },
+    {
+      "bin": 3,
+      "count": 10417,
+      "predicted_pd": 0.1363,
+      "observed_rate": 0.1852
+    },
+    {
+      "bin": 4,
+      "count": 10417,
+      "predicted_pd": 0.1555,
+      "observed_rate": 0.2162
+    },
+    {
+      "bin": 5,
+      "count": 10417,
+      "predicted_pd": 0.1755,
+      "observed_rate": 0.2281
+    },
+    {
+      "bin": 6,
+      "count": 10417,
+      "predicted_pd": 0.1982,
+      "observed_rate": 0.2681
+    },
+    {
+      "bin": 7,
+      "count": 10417,
+      "predicted_pd": 0.226,
+      "observed_rate": 0.2958
+    },
+    {
+      "bin": 8,
+      "count": 10417,
+      "predicted_pd": 0.2635,
+      "observed_rate": 0.3492
+    },
+    {
+      "bin": 9,
+      "count": 10417,
+      "predicted_pd": 0.3391,
+      "observed_rate": 0.4361
+    }
+  ],
+  "psi_vs_train": {
+    "valid": {
+      "score": 0.0005,
+      "revenue": 0.0118,
+      "dti_n": 0.0212,
+      "loan_amnt": 0.006,
+      "fico_n": 0.0015,
+      "loan_to_income": 0.0047
+    },
+    "test": {
+      "score": 0.0108,
+      "revenue": 0.0307,
+      "dti_n": 0.0034,
+      "loan_amnt": 0.0221,
+      "fico_n": 0.0019,
+      "loan_to_income": 0.0507
+    }
+  },
+  "model_comparison": {
+    "woe_scorecard": {
+      "valid": {
+        "auc": 0.6616,
+        "gini": 0.3231,
+        "ks": 0.2298,
+        "mean_pd": 0.1847,
+        "default_rate": 0.2215
+      },
+      "test": {
+        "auc": 0.6607,
+        "gini": 0.3214,
+        "ks": 0.2298,
+        "mean_pd": 0.1762,
+        "default_rate": 0.2346
+      }
+    },
+    "logreg_onehot": {
+      "params": {
+        "C": 0.01
+      },
+      "valid": {
+        "auc": 0.6635,
+        "gini": 0.327,
+        "ks": 0.2327,
+        "mean_pd": 0.1852,
+        "default_rate": 0.2215
+      },
+      "test": {
+        "auc": 0.6628,
+        "gini": 0.3255,
+        "ks": 0.2321,
+        "mean_pd": 0.1776,
+        "default_rate": 0.2346
+      },
+      "fit_seconds": 2.1
+    },
+    "decision_tree": {
+      "params": {
+        "max_depth": 8,
+        "min_samples_leaf": 500
+      },
+      "valid": {
+        "auc": 0.6544,
+        "gini": 0.3088,
+        "ks": 0.2229,
+        "mean_pd": 0.1852,
+        "default_rate": 0.2215
+      },
+      "test": {
+        "auc": 0.6503,
+        "gini": 0.3005,
+        "ks": 0.2171,
+        "mean_pd": 0.1766,
+        "default_rate": 0.2346
+      },
+      "fit_seconds": 4.5
+    },
+    "random_forest": {
+      "params": {
+        "max_depth": 12,
+        "min_samples_leaf": 200
+      },
+      "valid": {
+        "auc": 0.6643,
+        "gini": 0.3286,
+        "ks": 0.2344,
+        "mean_pd": 0.1847,
+        "default_rate": 0.2215
+      },
+      "test": {
+        "auc": 0.6651,
+        "gini": 0.3301,
+        "ks": 0.237,
+        "mean_pd": 0.1779,
+        "default_rate": 0.2346
+      },
+      "fit_seconds": 37.2
+    },
+    "xgboost": {
+      "params": {
+        "max_depth": 5,
+        "learning_rate": 0.05,
+        "min_child_weight": 50
+      },
+      "valid": {
+        "auc": 0.6695,
+        "gini": 0.3389,
+        "ks": 0.2405,
+        "mean_pd": 0.1879,
+        "default_rate": 0.2215
+      },
+      "test": {
+        "auc": 0.6684,
+        "gini": 0.3367,
+        "ks": 0.2395,
+        "mean_pd": 0.1787,
+        "default_rate": 0.2346
+      },
+      "fit_seconds": 7.1
+    }
+  }
+}

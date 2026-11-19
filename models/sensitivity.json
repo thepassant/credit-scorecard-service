@@ -1,0 +1,172 @@
+{
+  "configured": {
+    "min_iv": 0.02,
+    "max_n_bins": 10,
+    "min_bin_size": 0.02
+  },
+  "sample_frac": null,
+  "results": [
+    {
+      "param": "max_n_bins",
+      "value": 5,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 28,
+      "valid_auc": 0.6566,
+      "test_auc": 0.6564
+    },
+    {
+      "param": "max_n_bins",
+      "value": 10,
+      "configured": true,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 51,
+      "valid_auc": 0.6584,
+      "test_auc": 0.6584
+    },
+    {
+      "param": "max_n_bins",
+      "value": 20,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 63,
+      "valid_auc": 0.6588,
+      "test_auc": 0.6585
+    },
+    {
+      "param": "min_bin_size",
+      "value": 0.01,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 51,
+      "valid_auc": 0.6584,
+      "test_auc": 0.6584
+    },
+    {
+      "param": "min_bin_size",
+      "value": 0.02,
+      "configured": true,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 51,
+      "valid_auc": 0.6584,
+      "test_auc": 0.6584
+    },
+    {
+      "param": "min_bin_size",
+      "value": 0.05,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 51,
+      "valid_auc": 0.6584,
+      "test_auc": 0.6584
+    },
+    {
+      "param": "min_iv",
+      "value": 0.0,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "emp_length",
+        "purpose",
+        "home_ownership_n"
+      ],
+      "total_bins": 65,
+      "valid_auc": 0.6616,
+      "test_auc": 0.6607
+    },
+    {
+      "param": "min_iv",
+      "value": 0.01,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "purpose",
+        "home_ownership_n"
+      ],
+      "total_bins": 55,
+      "valid_auc": 0.6598,
+      "test_auc": 0.6578
+    },
+    {
+      "param": "min_iv",
+      "value": 0.02,
+      "configured": true,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income",
+        "home_ownership_n"
+      ],
+      "total_bins": 51,
+      "valid_auc": 0.6584,
+      "test_auc": 0.6584
+    },
+    {
+      "param": "min_iv",
+      "value": 0.03,
+      "configured": false,
+      "features": [
+        "revenue",
+        "dti_n",
+        "loan_amnt",
+        "fico_n",
+        "loan_to_income"
+      ],
+      "total_bins": 48,
+      "valid_auc": 0.6531,
+      "test_auc": 0.6512
+    }
+  ]
+}

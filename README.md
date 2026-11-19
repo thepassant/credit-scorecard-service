@@ -55,11 +55,12 @@ default rate drops to 2% for 2018Q4.
 ## Method
 
 1. **Binning:** each feature is binned with [optbinning](https://gnpalencia.org/optbinning/)
-   (monotonic trend for numeric features, at least 2% of loans per bin). Each bin's weight
+   (monotonic trend for numeric features, at most 10 bins). Each bin's weight
    of evidence is `WoE = ln(%good / %bad)`, and its information value (IV) is computed.
 2. **Selection:** features with IV < 0.02 are dropped. The logistic regression is refit
    until every coefficient has the expected negative sign, since a flipped sign means
-   collinearity.
+   collinearity. These settings are fixed by hand, not tuned, and are checked with a
+   sensitivity run instead (see *Scorecard settings* under Results).
 3. **Scaling:** `score = offset + factor · ln(odds_good)`, with 600 points at 50:1 good:bad
    odds and 20 points to double the odds (PDO). Each feature's bin gets
    `−factor · β · WoE` points, so the score is the sum of a base and per-feature points.
@@ -103,6 +104,32 @@ interactions.
 loan_amnt 0.036 · revenue 0.032 · home_ownership_n 0.021 · *purpose 0.018 and
 emp_length 0.007 dropped (IV < 0.02)*.
 
+**Scorecard settings.** The challengers are tuned with grids. The scorecard's settings
+are fixed in `config.py`, so `make sensitivity` refits it with one setting changed at a
+time and records the result in `models/sensitivity.json`. Settings are judged on
+validation; test is for reference.
+
+| Setting | Value | Valid AUC | Test AUC | Bins | Features |
+|---|---|---|---|---|---|
+| max bins per feature | 5 | 0.6566 | 0.6564 | 28 | 6 |
+| | **10** | **0.6584** | **0.6584** | 51 | 6 |
+| | 20 | 0.6588 | 0.6585 | 63 | 6 |
+| min loans per bin | 1%, **2%**, 5% | 0.6584 | 0.6584 | 51 | 6 |
+| IV cutoff | 0 | 0.6616 | 0.6607 | 65 | 8 |
+| | 0.01 | 0.6598 | 0.6578 | 55 | 7 |
+| | **0.02** | **0.6584** | **0.6584** | 51 | 6 |
+| | 0.03 | 0.6531 | 0.6512 | 48 | 5 |
+
+- **Max bins:** going from 5 to 10 bins gains 0.002 AUC. Going to 20 adds only 0.0004
+  for 12 more bins to read and explain, so 10 is kept.
+- **Min loans per bin:** has no effect. optbinning first splits each feature into at most
+  20 pre-bins of at least 5% of loans each, so a minimum of 5% or less never binds.
+- **IV cutoff:** the one setting that matters. Keeping `purpose` and `emp_length`
+  (cutoff 0) adds 0.003 AUC on both validation and test, and both get coefficients with
+  the expected sign. The SHAP comparison above points the same way: part of XGBoost's
+  edge comes from `purpose`. v1 keeps the conventional 0.02 cutoff; re-admitting these
+  features is the first item for v2 (see Roadmap).
+
 **Stability.** PSI of the score against training is 0.0005 (valid) and 0.016 (test).
 All features are below 0.06, so the inputs are stable.
 
@@ -126,6 +153,7 @@ make install      # uv sync --extra train + pre-commit hooks
 make train        # download data, train, compare challengers, promote champion (~5 min)
 make test
 make serve        # http://localhost:8000/docs
+make sensitivity  # refit the scorecard with each binning setting varied (~1 min)
 make notebook     # re-execute the EDA / model-comparison notebook in place
 ```
 
@@ -218,6 +246,7 @@ src/credit_scorecard_service/
     challengers.py     one-hot logreg, decision tree, random forest, XGBoost
     metrics.py         AUC/Gini/KS, calibration, cost-optimal cutoff, PSI
     train.py           `cs-train` entry point
+    sensitivity.py     `cs-sensitivity`: scorecard binning settings varied one at a time
 notebooks/             EDA, scorecard walkthrough, challenger + SHAP comparison
 tests/                 synthetic-data fixtures: no download needed in CI
 models/                versioned scorecard + metrics JSON, champion.json
@@ -237,7 +266,9 @@ models/                versioned scorecard + metrics JSON, champion.json
 ## Roadmap
 
 - [x] EDA and model-comparison notebook (incl. SHAP for XGBoost)
-- [ ] Scorecard v2: re-admit grouped `purpose`, finer top FICO bin (gaps found by SHAP)
+- [x] Sensitivity check of the scorecard's binning settings (`make sensitivity`)
+- [ ] Scorecard v2: re-admit `purpose` and `emp_length` (+0.003 AUC at IV cutoff 0),
+  finer top FICO bin (gaps found by SHAP and the sensitivity check)
 - [ ] PD recalibration (intercept / Platt) on the most recent matured months
 - [ ] MLflow tracking
 - [ ] Retraining loop: monthly ingest → validation → PSI/AUC check → retrain → promote on margin

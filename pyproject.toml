@@ -29,6 +29,7 @@ train = [
 [project.scripts]
 cs-download = "credit_scorecard_service.training.data:main"
 cs-train = "credit_scorecard_service.training.train:main"
+cs-sensitivity = "credit_scorecard_service.training.sensitivity:main"
 
 [dependency-groups]
 dev = [

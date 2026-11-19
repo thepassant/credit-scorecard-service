@@ -72,9 +72,10 @@ SCALING = Scaling()
 
 @dataclass(frozen=True)
 class BinningConfig:
+    # Fixed by hand, not tuned; `cs-sensitivity` checks each one (README, Results).
     min_iv: float = 0.02  # features below this information value are dropped
     max_n_bins: int = 10
-    min_bin_size: float = 0.02
+    min_bin_size: float = 0.02  # never binds: optbinning's pre-bins already hold >= 5%
 
 
 BINNING = BinningConfig()

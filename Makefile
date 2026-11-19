@@ -1,4 +1,4 @@
-.PHONY: install data train train-quick test lint serve notebook docker-build docker-run
+.PHONY: install data train train-quick sensitivity test lint serve notebook docker-build docker-run
 
 install:        ## Install all dependencies (service + training + dev tools)
 	uv sync --extra train --group notebook
@@ -12,6 +12,9 @@ train:          ## Full training run: scorecard + challengers, promotes to champ
 
 train-quick:    ## 10% sample, scorecard only, does not touch the champion
 	uv run cs-train --sample-frac 0.1 --skip-challengers --no-promote
+
+sensitivity:    ## Vary the scorecard's binning settings one at a time (~1 min)
+	uv run cs-sensitivity
 
 test:
 	uv run pytest

@@ -14,6 +14,15 @@ scorecard**: regulators and credit officers can read every point it assigns. It 
 benchmarked against tree-based challengers (decision tree, random forest, XGBoost)
 to measure what that transparency costs in accuracy.
 
+**Why the AUC is about 0.66.** This is a limit of the data, not of the model. Only
+seven fields are known at application time: income, DTI, loan amount, FICO, employment
+length, purpose and home ownership. The dataset has no credit-bureau detail
+(utilisation, delinquencies, inquiries), and the lender's own interest rate and grade
+are removed because they would leak its risk view. Tuned XGBoost, given the same
+fields, reaches only 0.67 AUC, so a more flexible model does not find much more signal.
+The goal is the best *transparent* model on these inputs, plus an honest measurement of
+what that transparency costs (see [Results](#results)).
+
 ## Data
 
 [Lending Club loan dataset for granting models](https://zenodo.org/records/11295916)

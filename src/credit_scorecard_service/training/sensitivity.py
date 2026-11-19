@@ -29,7 +29,7 @@ log = logging.getLogger("sensitivity")
 SWEEPS: dict[str, list[Any]] = {
     "max_n_bins": [5, 10, 20],
     "min_bin_size": [0.01, 0.02, 0.05],
-    "min_iv": [0.0, 0.01, 0.02, 0.03],
+    "min_iv": [0.0, 0.005, 0.01, 0.02, 0.03],
 }
 
 
